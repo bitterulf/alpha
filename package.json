@@ -1,0 +1,23 @@
+{
+  "name": "alpha",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitterulf/alpha.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bitterulf/alpha/issues"
+  },
+  "homepage": "https://github.com/bitterulf/alpha",
+  "dependencies": {
+    "domready": "^1.0.8",
+    "html2json": "^1.0.2"
+  }
+}

@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <title>alpha</title>
+        <script src="https://unpkg.com/mithril/mithril.js"></script>
+        <script src="x-tag-core.min.js"></script>
+        <script src="index.js"></script>
+    </head>
+    <body>
+        <st-travel start="bremen">
+            <st-city name="bremen">
+                <st-road city="hamburg"></st-road>
+            </st-city>
+            <st-city name="hamburg">
+                <st-road city="lübeck"></st-road>
+                <st-road city="bremen"></st-road>
+            </st-city>
+            <st-city name="lübeck">
+                <st-road city="hamburg"></st-road>
+            </st-city>
+        </st-travel>
+
+        <div id="target"></div>
+        <s-svg target="target">
+            <s-copy dictionary='abc', punch='aacbb'><s-circle /></s-copy>
+        </s-svg>
+
+        <st-story name="dark sea">
+            <st-character name="stuart"></st-character>
+            <st-character name="jack"></st-character>
+            <st-scene name="harbour">
+                <st-plot name="ariving">
+                    <st-conversation>
+                        <st-dialog from="stuart" to="jack">hi jack</st-dialog>
+                        <st-dialog from="jack" to="stuart">hi stuart</st-dialog>
+                        <st-dialog from="jack" to="stuart">
+                            where do you wanto go?:
+                            <st-decision>
+                                north
+                            </st-decision>
+                            <st-decision>
+                                south
+                            </st-decision>
+                        </st-dialog>
+                    </st-conversation>
+                </st-plot>
+            </st-scene>
+        </st-story>
+    </body>
+</html>
