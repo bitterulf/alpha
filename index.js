@@ -101,7 +101,9 @@ xtag.register('st-travel', {
                 return child.node == 'element' && child.tag == 'st-city';
             }).forEach(function(cityNode) {
                 cities.push({
-                    name: cityNode.attr.name
+                    name: cityNode.attr.name,
+                    x: cityNode.attr.x,
+                    y: cityNode.attr.y
                 });
 
                 cityNode.child.filter(function(child) {
@@ -126,13 +128,51 @@ xtag.register('st-travel', {
 
             const Component = {
                 view: function() {
+                    const cityRadius = 64;
+                    const mapBorder = 32;
+
+                    const toInt = function(value) {
+                        return parseInt(value);
+                    }
+
+                    const xPositions = _.pluck(state.cities, 'x').map(toInt);
+                    const yPositions = _.pluck(state.cities, 'y').map(toInt);
+
+                    const xMin = _.min(xPositions) - cityRadius;
+                    const xMax = _.max(xPositions) + cityRadius;
+                    const xWidth = xMax - xMin + mapBorder * 2;
+                    const xOffset = xMin + cityRadius - mapBorder;
+
+                    const yMin = _.min(yPositions) - cityRadius;
+                    const yMax = _.max(yPositions) + cityRadius;
+                    const yWidth = yMax - yMin + mapBorder * 2;
+                    const yOffset = yMin + cityRadius - mapBorder;
+
                     return m('travel',
                         [
                             m('h1', 'traveller'),
-                            m('div',state.cities.map(function(city) {
+                            m('div', {
+                                style: {
+                                    position: 'relative',
+                                    width: xWidth + 'px',
+                                    height: yWidth + 'px',
+                                    border: '1px solid blue'
+                                }
+                            }, state.cities.map(function(city) {
                                 if (state.currentCity == city.name) {
-                                    return m('div', [
-                                        m('div', '<'+city.name+'>'),
+                                    return m('div', {
+                                        style: {
+                                            position: 'absolute',
+                                            left: (city.x - xOffset) + 'px',
+                                            top: (city.y - yOffset) + 'px',
+                                            width: cityRadius * 2 + 'px',
+                                            height: cityRadius * 2 + 'px',
+                                            border: '1px solid green',
+                                            'border-radius': cityRadius + 'px',
+                                            'text-align': 'center'
+                                        }
+                                    }, [
+                                        m('div', city.name),
                                         m('div', state.roads.filter(function(road) { return road.from == state.currentCity }).map(function(road) {
                                             return m('button', {
                                                 onclick: function() {
@@ -142,7 +182,19 @@ xtag.register('st-travel', {
                                         }))
                                     ])
                                 }
-                                return m('div', city.name)
+
+                                return m('div', {
+                                    style: {
+                                        position: 'absolute',
+                                        left: (city.x - xOffset) + 'px',
+                                        top: (city.y - yOffset) + 'px',
+                                        width: cityRadius * 2 + 'px',
+                                        height: cityRadius * 2 + 'px',
+                                        border: '1px solid grey',
+                                        'border-radius': cityRadius + 'px',
+                                        'text-align': 'center'
+                                    }
+                                }, city.name)
                             })
                           )
                       ]

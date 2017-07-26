@@ -3,18 +3,19 @@
         <title>alpha</title>
         <script src="https://unpkg.com/mithril/mithril.js"></script>
         <script src="x-tag-core.min.js"></script>
+        <script src="underscore-min.js"></script>
         <script src="index.js"></script>
     </head>
     <body>
         <st-travel start="bremen">
-            <st-city name="bremen">
+            <st-city name="bremen" x=100 y=100>
                 <st-road city="hamburg"></st-road>
             </st-city>
-            <st-city name="hamburg">
-                <st-road city="lübeck"></st-road>
+            <st-city name="hamburg" x=250 y=200>
+                <st-road city="luebeck"></st-road>
                 <st-road city="bremen"></st-road>
             </st-city>
-            <st-city name="lübeck">
+            <st-city name="luebeck" x=400 y=100>
                 <st-road city="hamburg"></st-road>
             </st-city>
         </st-travel>
