@@ -117,7 +117,9 @@ xtag.register('st-travel', {
             });
 
             this.state = {
+                idle: true,
                 currentCity: startCity,
+                currentAnimation: '',
                 cities: cities,
                 roads: roads
             };
@@ -148,18 +150,112 @@ xtag.register('st-travel', {
                     const yWidth = yMax - yMin + mapBorder * 2;
                     const yOffset = yMin + cityRadius - mapBorder;
 
+                    const cityByName = {};
+                    state.cities.forEach(function(city) {
+                        cityByName[city.name] = city;
+                    });
+
+                    const roadPaths = state.roads.map(function(road) {
+                        const fromCity = cityByName[road.from];
+                        const toCity = cityByName[road.to];
+                        fromCity.x = parseInt(fromCity.x);
+                        fromCity.y = parseInt(fromCity.y);
+                        toCity.x = parseInt(toCity.x);
+                        toCity.y = parseInt(toCity.y);
+                        return '@keyframes '+road.from+'_'+road.to+' { from {left: '+(fromCity.x -8)+'px; top: '+(fromCity.y -8)+'px;} to {left:'+(toCity.x -8)+'px; top: '+(toCity.y -8)+'px;} }';
+                    });
+
+                    const currentCity = cityByName[state.currentCity];
+
                     return m('travel',
-                        [
-                            m('h1', 'traveller'),
-                            m('div', {
+                            {
                                 style: {
                                     position: 'relative',
-                                    width: xWidth + 'px',
-                                    height: yWidth + 'px',
-                                    border: '1px solid blue'
+                                    top: '0px',
+                                    left: '0px'
                                 }
-                            }, state.cities.map(function(city) {
-                                if (state.currentCity == city.name) {
+                            },
+                            [
+                                m('style', roadPaths.join(' ')),
+                                m('h1', 'traveller'),
+                                m('div',
+                                    {
+                                        style: {
+                                            position: 'absolute',
+                                            top: '0px',
+                                            left: '0px',
+                                            width: xWidth + 'px',
+                                            height: yWidth + 'px',
+                                            border: '4px solid yellow'
+                                        }
+                                    },
+                                    [
+                                        m('div', {
+                                            style: {
+                                                position: 'absolute',
+                                                top: currentCity.x-8+'px',
+                                                left: currentCity.y-8+'px',
+                                                animation: state.currentAnimation
+                                            }
+                                        }, [
+                                            m('div', {
+                                                style: {
+                                                    position: 'relative',
+                                                    top: cityRadius*-1+'px',
+                                                    left: cityRadius*-1+'px',
+                                                    width: cityRadius * 2 + 'px',
+                                                    height: cityRadius * 2 + 'px',
+                                                    border: '1px solid magenta',
+                                                    'text-align': 'center'
+                                                }
+                                            }, 'player')
+                                        ])
+                                    ]
+                                ),
+                                m('div', {
+                                    style: {
+                                        position: 'absolute',
+                                        top: '0px',
+                                        left: '0px',
+                                        width: xWidth + 'px',
+                                        height: yWidth + 'px',
+                                        border: '1px solid blue'
+                                    }
+                                }, state.cities.map(function(city) {
+                                    if (state.currentCity == city.name) {
+                                        return m('div', {
+                                            style: {
+                                                position: 'absolute',
+                                                left: (city.x - xOffset) + 'px',
+                                                top: (city.y - yOffset) + 'px',
+                                                width: cityRadius * 2 + 'px',
+                                                height: cityRadius * 2 + 'px',
+                                                border: '1px solid green',
+                                                'border-radius': cityRadius + 'px',
+                                                'text-align': 'center'
+                                            }
+                                        }, [
+                                            m('div', city.name),
+                                            m('div', state.roads.filter(function(road) { return road.from == state.currentCity }).map(function(road) {
+                                                if (!state.idle) {
+                                                    return '';
+                                                }
+
+                                                return m('button', {
+                                                    onclick: function() {
+                                                        state.idle = false;
+                                                        state.currentAnimation = road.from+'_'+road.to+'  1s forwards'
+                                                        state.currentCity = road.to;
+                                                        window.setTimeout(function() {
+                                                            state.idle = true;
+                                                            m.redraw();
+                                                        }, 1000);
+                                                    }
+                                                }, road.to);
+                                            }))
+                                        ])
+                                    }
+
                                     return m('div', {
                                         style: {
                                             position: 'absolute',
@@ -167,37 +263,14 @@ xtag.register('st-travel', {
                                             top: (city.y - yOffset) + 'px',
                                             width: cityRadius * 2 + 'px',
                                             height: cityRadius * 2 + 'px',
-                                            border: '1px solid green',
+                                            border: '1px solid grey',
                                             'border-radius': cityRadius + 'px',
                                             'text-align': 'center'
                                         }
-                                    }, [
-                                        m('div', city.name),
-                                        m('div', state.roads.filter(function(road) { return road.from == state.currentCity }).map(function(road) {
-                                            return m('button', {
-                                                onclick: function() {
-                                                    state.currentCity = road.to;
-                                                }
-                                            }, road.to);
-                                        }))
-                                    ])
-                                }
-
-                                return m('div', {
-                                    style: {
-                                        position: 'absolute',
-                                        left: (city.x - xOffset) + 'px',
-                                        top: (city.y - yOffset) + 'px',
-                                        width: cityRadius * 2 + 'px',
-                                        height: cityRadius * 2 + 'px',
-                                        border: '1px solid grey',
-                                        'border-radius': cityRadius + 'px',
-                                        'text-align': 'center'
-                                    }
-                                }, city.name)
-                            })
-                          )
-                      ]
+                                    }, city.name)
+                                })
+                                )
+                            ]
                     )
                 }
             };
