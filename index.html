@@ -10,15 +10,18 @@
         </style>
     </head>
     <body>
+        <div id='container'></div>
+
         <st-travel start="bremen">
-            <st-city name="bremen" x=100 y=100>
+            <st-background image="map.png" width="2048" height="1536" x="0" y="0"></st-background>
+            <st-city name="bremen" x=773 y=798>
                 <st-road city="hamburg"></st-road>
             </st-city>
-            <st-city name="hamburg" x=250 y=200>
+            <st-city name="hamburg" x=804 y=781>
                 <st-road city="luebeck"></st-road>
                 <st-road city="bremen"></st-road>
             </st-city>
-            <st-city name="luebeck" x=400 y=100>
+            <st-city name="luebeck" x=826 y=776>
                 <st-road city="hamburg"></st-road>
             </st-city>
         </st-travel>
