@@ -74,5 +74,8 @@
   <object x="777" y="803">
    <polyline points="0,0 -9,-58 -10,-102 -5,-140 10,-170 32,-187 56,-193 75,-191 80,-155 79,-133 66,-108 60,-90 67,-66 65,-54 68,-33 54,-23"/>
   </object>
+  <object name="Somewhere" x="1002" y="566" width="7" height="7">
+   <ellipse/>
+  </object>
  </objectgroup>
 </map>

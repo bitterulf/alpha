@@ -143,11 +143,9 @@ xtag.register('st-travel', {
         inserted: function(){
             const state = this.state;
 
-            console.log('BG', this.state.backgrounds);
-
             const Component = {
                 view: function() {
-                    const cityRadius = 64;
+                    const cityRadius = 32;
                     const mapBorder = 32;
 
                     const toInt = function(value) {
@@ -159,13 +157,13 @@ xtag.register('st-travel', {
 
                     const xMin = _.min(xPositions) - cityRadius;
                     const xMax = _.max(xPositions) + cityRadius;
-                    const xWidth = xMax - xMin + mapBorder * 2;
-                    const xOffset = xMin + cityRadius - mapBorder;
+                    const xWidth = xMax - xMin;
+                    const xOffset = xMin;
 
                     const yMin = _.min(yPositions) - cityRadius;
                     const yMax = _.max(yPositions) + cityRadius;
-                    const yWidth = yMax - yMin + mapBorder * 2;
-                    const yOffset = yMin + cityRadius - mapBorder;
+                    const yWidth = yMax - yMin;
+                    const yOffset = yMin;
 
                     const cityByName = {};
                     state.cities.forEach(function(city) {
@@ -179,136 +177,108 @@ xtag.register('st-travel', {
                         fromCity.y = parseInt(fromCity.y);
                         toCity.x = parseInt(toCity.x);
                         toCity.y = parseInt(toCity.y);
-                        return '@keyframes '+road.from+'_'+road.to+' { from {left: '+(fromCity.x -8)+'px; top: '+(fromCity.y -8)+'px;} to {left:'+(toCity.x -8)+'px; top: '+(toCity.y -8)+'px;} }';
+                        return '@keyframes '+road.from+'_'+road.to+' { from {left: '+(fromCity.x)+'px; top: '+(fromCity.y)+'px;} to {left:'+(toCity.x)+'px; top: '+(toCity.y)+'px;} }';
                     });
 
                     const currentCity = cityByName[state.currentCity];
 
-                    return m('travel',
+                    return m('div.travel',
                             {
                                 style: {
                                     position: 'relative',
                                     top: '0px',
-                                    left: '0px'
+                                    left: '0px',
+                                    width: xWidth + 'px',
+                                    height: yWidth + 'px',
+                                    overflow: 'hidden'
                                 }
                             },
                             [
                                 m('style', roadPaths.join(' ')),
                                 m('h1', 'traveller'),
-                                m('div', {
+                                m('div.mainOffset', {
                                     style: {
                                         position: 'absolute',
-                                        top: '0px',
-                                        left: '0px',
-                                        width: xWidth + 'px',
-                                        height: yWidth + 'px',
-                                        border: '1px solid blue',
-                                        overflow: 'hidden'
+                                        top: yOffset * -1 + 'px',
+                                        left: xOffset * -1 + 'px'
                                     }
                                 },
                                 [
-                                    m('div', state.backgrounds.map(function(background) {
-                                        return m('div', {
+                                    m('div.backgrounds', state.backgrounds.map(function(background) {
+                                        return m('div.background', {
                                             style: {
                                                 backgroundImage: 'url("map.png")',
                                                 position: 'absolute',
-                                                left: parseInt(background.x) - xOffset + 'px',
-                                                top: parseInt(background.y) - yOffset + 'px',
+                                                left: background.x + 'px',
+                                                top: background.y + 'px',
                                                 width: background.width + 'px',
                                                 height: background.height + 'px'
                                             }
                                         });
                                     })),
-                                    m('div', state.cities.map(function(city) {
+                                    m('div.cities', state.cities.map(function(city) {
                                         if (state.currentCity == city.name) {
-                                            return m('div', {
+                                        }
+
+                                        return m('div',
+                                             {
                                                 style: {
                                                     position: 'absolute',
-                                                    left: (city.x - xOffset) + 'px',
-                                                    top: (city.y - yOffset) + 'px',
-                                                    // width: 10 + 'px',
-                                                    // height: 10 + 'px',
-                                                    width: cityRadius * 2 + 'px',
-                                                    height: cityRadius * 2 + 'px',
-                                                    border: '1px solid green',
-                                                    'background-color': 'red',
-                                                    // 'border-radius': cityRadius + 'px',
-                                                    'text-align': 'center'
+                                                    left: (city.x) + 'px',
+                                                    top: (city.y) + 'px'
                                                 }
-                                            }, [
-                                                m('div', city.name)
-                                            ])
-                                        }
-
-                                        return m('div', {
-                                            style: {
-                                                position: 'absolute',
-                                                left: (city.x - xOffset) + 'px',
-                                                top: (city.y - yOffset) + 'px',
-                                                // width: 10 + 'px',
-                                                // height: 10 + 'px',
-                                                width: cityRadius * 2 + 'px',
-                                                height: cityRadius * 2 + 'px',
-                                                border: '1px solid grey',
-                                                'background-color': 'red',
-                                                // 'border-radius': cityRadius + 'px',
-                                                'text-align': 'center'
-                                            }
-                                        }, city.name)
-                                    }))
-                                ]),
-                                m('div',
-                                    {
-                                        style: {
-                                            position: 'absolute',
-                                            left: 0 - xOffset + 'px',
-                                            top: 0 - yOffset + 'px',
-                                            width: xWidth + 'px',
-                                            height: yWidth + 'px',
-                                            border: '4px solid yellow'
-                                        }
-                                    },
-                                    [
-                                        m('div', {
-                                            style: {
-                                                position: 'absolute',
-                                                top: currentCity.x-8+'px',
-                                                left: currentCity.y-8+'px',
-                                                animation: state.currentAnimation
-                                            }
-                                        }, [
-                                            m('div', {
+                                            }, m('div', {
                                                 style: {
                                                     position: 'relative',
-                                                    top: 0*-1+'px',
-                                                    left: 0*-1+'px',
+                                                    left: cityRadius * -1 + 'px',
+                                                    top: cityRadius * -1 + 'px',
                                                     width: cityRadius * 2 + 'px',
                                                     height: cityRadius * 2 + 'px',
-                                                    border: '1px solid magenta',
+                                                    border: '1px solid grey',
                                                     'text-align': 'center'
                                                 }
-                                            }, [
-                                                m('div', state.roads.filter(function(road) { return road.from == state.currentCity }).map(function(road) {
-                                                    if (!state.idle) {
-                                                        return '';
-                                                    }
+                                            }, city.name)
+                                        );
+                                    })),
+                                    m('div.playerAnimation', {
+                                        style: {
+                                            position: 'absolute',
+                                            top: currentCity.y+'px',
+                                            left: currentCity.x+'px',
+                                            animation: state.currentAnimation
+                                        }
+                                    }, [
+                                        m('div.player', {
+                                            style: {
+                                                position: 'relative',
+                                                left: cityRadius * -1 + 'px',
+                                                top: cityRadius * -1 + 'px',
+                                                width: cityRadius * 2 + 'px',
+                                                height: cityRadius * 2 + 'px',
+                                                border: '1px solid magenta',
+                                                'text-align': 'center'
+                                            }
+                                        }, [
+                                            m('div.roads', state.roads.filter(function(road) { return road.from == state.currentCity }).map(function(road) {
+                                                if (!state.idle) {
+                                                    return '';
+                                                }
 
-                                                    return m('button', {
-                                                        onclick: function() {
-                                                            state.idle = false;
-                                                            state.currentAnimation = road.from+'_'+road.to+'  1s forwards'
-                                                            state.currentCity = road.to;
-                                                            window.setTimeout(function() {
-                                                                state.idle = true;
-                                                                m.redraw();
-                                                            }, 1000);
-                                                        }
-                                                    }, road.to);
-                                                }))
-                                            ])
+                                                return m('button', {
+                                                    onclick: function() {
+                                                        state.idle = false;
+                                                        state.currentAnimation = road.from+'_'+road.to+'  1s forwards'
+                                                        state.currentCity = road.to;
+                                                        window.setTimeout(function() {
+                                                            state.idle = true;
+                                                            m.redraw();
+                                                        }, 1000);
+                                                    }
+                                                }, road.to);
+                                            }))
                                         ])
-                                    ]
-                                )
+                                    ])
+                                ])
                             ]
                     )
                 }
@@ -331,7 +301,6 @@ domready(function () {
             .forEach(function(layer) {
                 layer.objects.forEach(function(obj) {
                     if (obj.ellipse) {
-                        console.log(obj);
                         cities.push({
                             name: obj.name,
                             x: obj.x,

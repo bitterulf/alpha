@@ -281,6 +281,20 @@
                  "width":0,
                  "x":777,
                  "y":803
+                },
+                {
+                 "ellipse":true,
+                 "height":7,
+                 "name":"Somewhere",
+                 "properties":
+                    {
+
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":7,
+                 "x":1002,
+                 "y":566
                 }],
          "opacity":1,
          "type":"objectgroup",
