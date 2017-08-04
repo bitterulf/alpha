@@ -89,7 +89,7 @@ xtag.register('st-story', {
     }
 });
 
-xtag.register('st-travel', {
+xtag.register('game-map', {
     lifecycle: {
         created: function(){
             const travelNode = html2json(this.outerHTML).child[0];
@@ -100,26 +100,42 @@ xtag.register('st-travel', {
             const roads = [];
 
             travelNode.child.filter(function(child) {
-                return child.node == 'element' && child.tag == 'st-city';
+                return child.node == 'element' && child.tag == 'game-city';
             }).forEach(function(cityNode) {
                 cities.push({
                     name: cityNode.attr.name,
                     x: cityNode.attr.x,
                     y: cityNode.attr.y
                 });
+            });
 
-                cityNode.child.filter(function(child) {
-                    return child.node == 'element' && child.tag == 'st-road';
-                }).forEach(function(roadNode) {
-                    roads.push({
-                        from: cityNode.attr.name,
-                        to: roadNode.attr.city
-                    });
+            travelNode.child.filter(function(child) {
+                return child.node == 'element' && child.tag == 'game-road';
+            }).forEach(function(roadNode) {
+                const path = roadNode.child.filter(function(child) {
+                    return child.node == 'element' && child.tag == 'game-point';
+                }).map(function(node) {
+                    return {
+                        x: parseInt(node.attr.x),
+                        y: parseInt(node.attr.y)
+                    };
+                });
+
+                roads.push({
+                    from: roadNode.attr.from,
+                    to: roadNode.attr.to,
+                    path: path
+                });
+
+                roads.push({
+                    from: roadNode.attr.to,
+                    to: roadNode.attr.from,
+                    path: JSON.parse(JSON.stringify(path)).reverse()
                 });
             });
 
             travelNode.child.filter(function(child) {
-                return child.node == 'element' && child.tag == 'st-background';
+                return child.node == 'element' && child.tag == 'game-background';
             }).forEach(function(backgroundNode) {
                 backgrounds.push({
                     image: backgroundNode.attr.image,
@@ -171,24 +187,61 @@ xtag.register('st-travel', {
                         cityByName[city.name] = city;
                     });
 
+                    const dist = function(a, b) {
+                        const x = a.x - b.x;
+                        const y = a.y - b.y;
+
+                        return Math.sqrt( x*x + y*y );
+                    };
+
+                    const convertPath = function(rawPath) {
+                        let distance = 0;
+                        let lastPoint;
+
+                        let path = rawPath.map(function(point, index) {
+                            if (lastPoint) {
+                                distance += dist(lastPoint, point);
+                            }
+                            point.rawDistance = distance;
+                            lastPoint = point;
+                            return point;
+                        });
+
+                        return path.map(function(point) {
+                            point.distance = Math.round(point.rawDistance / distance * 1000)/10;
+                            return point;
+                        })
+                    };
+
                     const roadPaths = state.roads.map(function(road) {
+                        const path = convertPath(road.path).map(function(point) {
+                            return ' '+point.distance+'%   { animation-timing-function: linear; left: '+point.x+'px; top: '+point.y+'px;}'
+                        });
+
                         const fromCity = cityByName[road.from];
                         const toCity = cityByName[road.to];
                         fromCity.x = parseInt(fromCity.x);
                         fromCity.y = parseInt(fromCity.y);
                         toCity.x = parseInt(toCity.x);
                         toCity.y = parseInt(toCity.y);
-                        return '@keyframes '+road.from+'_'+road.to+' { from {left: '+(fromCity.x)+'px; top: '+(fromCity.y)+'px;} to {left:'+(toCity.x)+'px; top: '+(toCity.y)+'px;} }';
+
+                        return '@keyframes '+road.from+'_'+road.to+' { '+path.join(' ')+' }';
                     });
 
                     const roadViewPaths = state.roads.map(function(road) {
+                        const path = convertPath(road.path).map(function(point) {
+
+                            return ' '+point.distance+'%   { animation-timing-function: linear; left: '+((point.x - xWidth/2) * -1)+'px; top: '+((point.y - yWidth/2) * -1)+'px;}'
+                        });
+
                         const fromCity = cityByName[road.from];
                         const toCity = cityByName[road.to];
                         fromCity.x = parseInt(fromCity.x);
                         fromCity.y = parseInt(fromCity.y);
                         toCity.x = parseInt(toCity.x);
                         toCity.y = parseInt(toCity.y);
-                        return '@keyframes '+road.from+'_'+road.to+'_view { from {left: '+((fromCity.x - xWidth/2) * -1)+'px; top: '+((fromCity.y - yWidth/2) * -1)+'px;} to {left:'+((toCity.x - xWidth/2) * -1)+'px; top: '+((toCity.y - yWidth/2) * -1)+'px;} }';
+
+                        return '@keyframes '+road.from+'_'+road.to+'_view { '+path.join(' ')+' }';
                     });
 
                     const currentCity = cityByName[state.currentCity];
@@ -281,14 +334,17 @@ xtag.register('st-travel', {
 
                                                 return m('button', {
                                                     onclick: function() {
+                                                        const distance = road.path[road.path.length - 1].rawDistance;
+                                                        const time = parseInt(distance * 10);
+                                                        console.log('MIME', time);
                                                         state.idle = false;
-                                                        state.currentAnimation = road.from+'_'+road.to+'  1s forwards';
-                                                        state.currentViewAnimation = road.from+'_'+road.to+'_view  1s forwards';
+                                                        state.currentAnimation = road.from+'_'+road.to+'  '+time+'ms forwards';
+                                                        state.currentViewAnimation = road.from+'_'+road.to+'_view  '+time+'ms forwards';
                                                         state.currentCity = road.to;
                                                         window.setTimeout(function() {
                                                             state.idle = true;
                                                             m.redraw();
-                                                        }, 1000);
+                                                        }, time);
                                                     }
                                                 }, road.to);
                                             }))
@@ -311,6 +367,8 @@ domready(function () {
     }).then(function(map) {
 
         const cities = [];
+        const roads = [];
+
         map
             .layers
             .filter(function(layer) { return layer.type == 'objectgroup'})
@@ -323,8 +381,55 @@ domready(function () {
                             y: obj.y
                         });
                     }
-                    else if(obj.polyline) {
+                });
+            });
 
+        const dist = function(a, b) {
+            const x = a.x - b.x;
+            const y = a.y - b.y;
+
+            return Math.sqrt( x*x + y*y );
+        };
+
+        map
+            .layers
+            .filter(function(layer) { return layer.type == 'objectgroup'})
+            .forEach(function(layer) {
+                layer.objects.forEach(function(obj) {
+                    if(obj.polyline) {
+                        const line = obj.polyline.map(function(point) {
+                            return {
+                                x: obj.x + point.x,
+                                y: obj.y + point.y
+                            };
+                        });
+
+                        let startCity;
+
+                        cities.forEach(function(city) {
+                            if (!startCity || dist(line[0], city)  < dist(line[0], startCity)) {
+                                startCity = city;
+                            }
+                        });
+
+                        let endCity;
+
+                        cities.forEach(function(city) {
+                            if (!endCity || dist(line[line.length-1], city)  < dist(line[line.length-1], endCity)) {
+                                endCity = city;
+                            }
+                        });
+
+                        line[0] = { x: startCity.x , y: startCity.y };
+                        line[line.length-1] = { x: endCity.x , y: endCity.y };
+
+                        console.log('poly', line);
+
+                        roads.push({
+                            from: startCity.name,
+                            to: endCity.name,
+                            path: line
+                        });
                     }
                 });
             });
@@ -375,6 +480,29 @@ domready(function () {
             })
         );
 
+        childElements = childElements.concat(
+            roads.map(function(road) {
+                return {
+                    "node":"element",
+                    "tag":"game-road",
+                    "attr":{
+                        "from": road.from,
+                        "to": road.to
+                    },
+                    "child": road.path.map(function(point) {
+                        return {
+                            "node":"element",
+                            "tag":"game-point",
+                            "attr":{
+                                "x": point.x,
+                                "y": point.y
+                            }
+                        };
+                    })
+                };
+            })
+        );
+
         const exampleStructure = {
             "node":"root",
             "child":[
@@ -382,6 +510,7 @@ domready(function () {
                     "node":"element",
                     "tag":"game-map",
                     "attr":{
+                        "start": cities[0].name,
                         "width": map.width * map.tilewidth / 2,
                         "height": map.height * map.tileheight / 2
                     },

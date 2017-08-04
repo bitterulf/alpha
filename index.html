@@ -12,24 +12,6 @@
     <body>
         <div id='container'></div>
 
-        <st-travel start="bremen">
-            <st-background image="map.png" width="2048" height="1536" x="0" y="0"></st-background>
-            <st-city name="bremen" x=773 y=798>
-                <st-road city="hamburg"></st-road>
-            </st-city>
-            <st-city name="hamburg" x=804 y=781>
-                <st-road city="luebeck"></st-road>
-                <st-road city="bremen"></st-road>
-            </st-city>
-            <st-city name="luebeck" x=826 y=776>
-                <st-road city="hamburg"></st-road>
-                <st-road city="somewhere"></st-road>
-            </st-city>
-            <st-city name="somewhere" x=1002 y=566>
-                <st-road city="hamburg"></st-road>
-            </st-city>
-        </st-travel>
-
         <div id="target"></div>
         <s-svg target="target">
             <s-copy dictionary='abc', punch='aacbb'><s-circle /></s-copy>
