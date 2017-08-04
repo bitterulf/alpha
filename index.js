@@ -134,6 +134,7 @@ xtag.register('st-travel', {
                 idle: true,
                 currentCity: startCity,
                 currentAnimation: '',
+                currentViewAnimation: '',
                 backgrounds: backgrounds,
                 cities: cities,
                 roads: roads
@@ -180,6 +181,16 @@ xtag.register('st-travel', {
                         return '@keyframes '+road.from+'_'+road.to+' { from {left: '+(fromCity.x)+'px; top: '+(fromCity.y)+'px;} to {left:'+(toCity.x)+'px; top: '+(toCity.y)+'px;} }';
                     });
 
+                    const roadViewPaths = state.roads.map(function(road) {
+                        const fromCity = cityByName[road.from];
+                        const toCity = cityByName[road.to];
+                        fromCity.x = parseInt(fromCity.x);
+                        fromCity.y = parseInt(fromCity.y);
+                        toCity.x = parseInt(toCity.x);
+                        toCity.y = parseInt(toCity.y);
+                        return '@keyframes '+road.from+'_'+road.to+'_view { from {left: '+((fromCity.x - xWidth/2) * -1)+'px; top: '+((fromCity.y - yWidth/2) * -1)+'px;} to {left:'+((toCity.x - xWidth/2) * -1)+'px; top: '+((toCity.y - yWidth/2) * -1)+'px;} }';
+                    });
+
                     const currentCity = cityByName[state.currentCity];
 
                     return m('div.travel',
@@ -195,12 +206,14 @@ xtag.register('st-travel', {
                             },
                             [
                                 m('style', roadPaths.join(' ')),
+                                m('style', roadViewPaths.join(' ')),
                                 m('h1', 'traveller'),
                                 m('div.mainOffset', {
                                     style: {
                                         position: 'absolute',
-                                        top: yOffset * -1 + 'px',
-                                        left: xOffset * -1 + 'px'
+                                        top: (currentCity.y - yWidth/2) * -1 + 'px',
+                                        left: (currentCity.x - xWidth/2) * -1 + 'px',
+                                        animation: state.currentViewAnimation
                                     }
                                 },
                                 [
@@ -255,7 +268,9 @@ xtag.register('st-travel', {
                                                 top: cityRadius * -1 + 'px',
                                                 width: cityRadius * 2 + 'px',
                                                 height: cityRadius * 2 + 'px',
-                                                border: '1px solid magenta',
+                                                'border-radius': cityRadius * 2 + 'px',
+                                                border: '1px solid green',
+                                                'background-color': 'lightgreen',
                                                 'text-align': 'center'
                                             }
                                         }, [
@@ -267,7 +282,8 @@ xtag.register('st-travel', {
                                                 return m('button', {
                                                     onclick: function() {
                                                         state.idle = false;
-                                                        state.currentAnimation = road.from+'_'+road.to+'  1s forwards'
+                                                        state.currentAnimation = road.from+'_'+road.to+'  1s forwards';
+                                                        state.currentViewAnimation = road.from+'_'+road.to+'_view  1s forwards';
                                                         state.currentCity = road.to;
                                                         window.setTimeout(function() {
                                                             state.idle = true;
