@@ -32,8 +32,7 @@ xtag.register('game-map', {
 
             const Component = {
                 view: function() {
-                    const cityRadius = 32;
-                    const mapBorder = 32;
+                    const cityRadius = 8;
 
                     const mapWidth = state.width;
                     const mapHeight = state.height;
@@ -116,7 +115,6 @@ xtag.register('game-map', {
                             [
                                 m('style', roadPaths.join(' ')),
                                 m('style', roadViewPaths.join(' ')),
-                                m('h1', 'traveller'),
                                 m('div.mainOffset', {
                                     style: {
                                         position: 'absolute',
@@ -182,31 +180,38 @@ xtag.register('game-map', {
                                                 'background-color': 'lightgreen',
                                                 'text-align': 'center'
                                             }
-                                        }, [
-                                            m('div.roads', state.roads.filter(function(road) { return road.from == state.currentCity }).map(function(road) {
-                                                if (!state.idle) {
-                                                    return '';
-                                                }
-
-                                                return m('button', {
-                                                    onclick: function() {
-                                                        const distance = road.path[road.path.length - 1].rawDistance;
-                                                        const time = parseInt(distance * 10);
-                                                        console.log('MIME', time);
-                                                        state.idle = false;
-                                                        state.currentAnimation = road.from+'_'+road.to+'  '+time+'ms forwards';
-                                                        state.currentViewAnimation = road.from+'_'+road.to+'_view  '+time+'ms forwards';
-                                                        state.currentCity = road.to;
-                                                        window.setTimeout(function() {
-                                                            state.idle = true;
-                                                            m.redraw();
-                                                        }, time);
-                                                    }
-                                                }, road.to);
-                                            }))
-                                        ])
+                                        })
                                     ])
-                                ])
+                                ]),
+                                m('div.roads', {
+                                    style: {
+                                        position: 'absolute',
+                                        top: (mapHeight/4*3)+'px',
+                                        left: '0px',
+                                        width: mapWidth+'px',
+                                        'text-align': 'center'
+                                    }
+                                }, state.roads.filter(function(road) { return road.from == state.currentCity }).map(function(road) {
+                                    if (!state.idle) {
+                                        return '';
+                                    }
+
+                                    return m('button', {
+                                        onclick: function() {
+                                            const distance = road.path[road.path.length - 1].rawDistance;
+                                            const time = parseInt(distance * 10);
+                                            console.log('MIME', time);
+                                            state.idle = false;
+                                            state.currentAnimation = road.from+'_'+road.to+'  '+time+'ms forwards';
+                                            state.currentViewAnimation = road.from+'_'+road.to+'_view  '+time+'ms forwards';
+                                            state.currentCity = road.to;
+                                            window.setTimeout(function() {
+                                                state.idle = true;
+                                                m.redraw();
+                                            }, time);
+                                        }
+                                    }, road.to);
+                                }))
                             ]
                     )
                 }
