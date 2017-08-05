@@ -32,7 +32,7 @@ xtag.register('game-map', {
 
             const Component = {
                 view: function() {
-                    const cityRadius = 8;
+                    const cityRadius = 43;
 
                     const mapWidth = state.width;
                     const mapHeight = state.height;
@@ -172,13 +172,11 @@ xtag.register('game-map', {
                                             style: {
                                                 position: 'relative',
                                                 left: cityRadius * -1 + 'px',
-                                                top: cityRadius * -1 + 'px',
+                                                top: cityRadius * -1.75 + 'px',
                                                 width: cityRadius * 2 + 'px',
                                                 height: cityRadius * 2 + 'px',
-                                                'border-radius': cityRadius * 2 + 'px',
-                                                border: '1px solid green',
-                                                'background-color': 'lightgreen',
-                                                'text-align': 'center'
+                                                'text-align': 'center',
+                                                'background-image': 'url("ship.png")'
                                             }
                                         })
                                     ])
