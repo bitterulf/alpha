@@ -116,6 +116,8 @@ xtag.register('game-map', {
                             [
                                 m('style', roadPaths.join(' ')),
                                 m('style', roadViewPaths.join(' ')),
+                                m('style', '@keyframes fade { 0% { opacity: 1 } 100% { opacity: 0 } } @keyframes fadeIn { 0% { opacity: 0 } 100% { opacity: 1 } }'),
+                                m('style', '@keyframes scaleOut { 0% { transform: scale(1.0) } 100% { transform: scale(0.5) } } @keyframes scaleIn { 0% { transform: scale(0.5) } 100% { transform: scale(1.0) } }'),
                                 m('div.mainOffset', {
                                     style: {
                                         position: 'absolute',
@@ -157,7 +159,8 @@ xtag.register('game-map', {
                                                     width: cityRadius * 2 + 'px',
                                                     height: cityRadius * 2 + 'px',
                                                     'background-image': 'url("marker.png")',
-                                                    'text-align': 'center'
+                                                    'text-align': 'center',
+                                                    animation: (state.currentCity == city.name) && state.idle ? 'scaleIn 1000ms forwards' : 'scaleOut 1000ms forwards'
                                                 }
                                             })
                                         );
@@ -169,7 +172,7 @@ xtag.register('game-map', {
                                             left: currentCity.x+'px',
                                             animation: state.currentAnimation
                                         }
-                                    }, [
+                                    },
                                         m('div.player', {
                                             style: {
                                                 position: 'relative',
@@ -178,10 +181,11 @@ xtag.register('game-map', {
                                                 width: playerRadius * 2 + 'px',
                                                 height: playerRadius * 2 + 'px',
                                                 'text-align': 'center',
-                                                'background-image': 'url("ship.png")'
+                                                'background-image': 'url("ship.png")',
+                                                animation: state.idle ? 'fade 1000ms forwards' : 'fadeIn 1000ms forwards'
                                             }
                                         })
-                                    ])
+                                    )
                                 ]),
                                 m('div.roads', {
                                     style: {
