@@ -2,6 +2,7 @@ const domready = require('domready');
 const cheerio = require('cheerio');
 const html2json = require('html2json').html2json;
 const json2html = require('html2json').json2html;
+const extractor = require('./modules/extractor.js');
 
 xtag.register('game-map', {
     lifecycle: {
@@ -9,58 +10,13 @@ xtag.register('game-map', {
             const travelNode = html2json(this.outerHTML).child[0];
             const startCity = travelNode.attr.start;
 
-            const backgrounds = [];
-            const cities = [];
-            const roads = [];
-
-            travelNode.child.filter(function(child) {
-                return child.node == 'element' && child.tag == 'game-city';
-            }).forEach(function(cityNode) {
-                cities.push({
-                    name: cityNode.attr.name,
-                    x: cityNode.attr.x,
-                    y: cityNode.attr.y
-                });
-            });
-
-            travelNode.child.filter(function(child) {
-                return child.node == 'element' && child.tag == 'game-road';
-            }).forEach(function(roadNode) {
-                const path = roadNode.child.filter(function(child) {
-                    return child.node == 'element' && child.tag == 'game-point';
-                }).map(function(node) {
-                    return {
-                        x: parseInt(node.attr.x),
-                        y: parseInt(node.attr.y)
-                    };
-                });
-
-                roads.push({
-                    from: roadNode.attr.from,
-                    to: roadNode.attr.to,
-                    path: path
-                });
-
-                roads.push({
-                    from: roadNode.attr.to,
-                    to: roadNode.attr.from,
-                    path: JSON.parse(JSON.stringify(path)).reverse()
-                });
-            });
-
-            travelNode.child.filter(function(child) {
-                return child.node == 'element' && child.tag == 'game-background';
-            }).forEach(function(backgroundNode) {
-                backgrounds.push({
-                    image: backgroundNode.attr.image,
-                    width: backgroundNode.attr.width,
-                    height: backgroundNode.attr.height,
-                    x: backgroundNode.attr.x,
-                    y: backgroundNode.attr.y
-                });
-            });
+            const backgrounds = extractor.extractBackgrounds(travelNode);
+            const cities = extractor.extractCities(travelNode);
+            const roads = extractor.extractRoads(travelNode);
 
             this.state = {
+                width: travelNode.attr.width,
+                height: travelNode.attr.height,
                 idle: true,
                 currentCity: startCity,
                 currentAnimation: '',
@@ -79,22 +35,8 @@ xtag.register('game-map', {
                     const cityRadius = 32;
                     const mapBorder = 32;
 
-                    const toInt = function(value) {
-                        return parseInt(value);
-                    }
-
-                    const xPositions = _.pluck(state.cities, 'x').map(toInt);
-                    const yPositions = _.pluck(state.cities, 'y').map(toInt);
-
-                    const xMin = _.min(xPositions) - cityRadius;
-                    const xMax = _.max(xPositions) + cityRadius;
-                    const xWidth = xMax - xMin;
-                    const xOffset = xMin;
-
-                    const yMin = _.min(yPositions) - cityRadius;
-                    const yMax = _.max(yPositions) + cityRadius;
-                    const yWidth = yMax - yMin;
-                    const yOffset = yMin;
+                    const mapWidth = state.width;
+                    const mapHeight = state.height;
 
                     const cityByName = {};
                     state.cities.forEach(function(city) {
@@ -145,7 +87,7 @@ xtag.register('game-map', {
                     const roadViewPaths = state.roads.map(function(road) {
                         const path = convertPath(road.path).map(function(point) {
 
-                            return ' '+point.distance+'%   { animation-timing-function: linear; left: '+((point.x - xWidth/2) * -1)+'px; top: '+((point.y - yWidth/2) * -1)+'px;}'
+                            return ' '+point.distance+'%   { animation-timing-function: linear; left: '+((point.x - mapWidth/2) * -1)+'px; top: '+((point.y - mapHeight/2) * -1)+'px;}'
                         });
 
                         const fromCity = cityByName[road.from];
@@ -166,8 +108,8 @@ xtag.register('game-map', {
                                     position: 'relative',
                                     top: '0px',
                                     left: '0px',
-                                    width: xWidth + 'px',
-                                    height: yWidth + 'px',
+                                    width: mapWidth + 'px',
+                                    height: mapHeight + 'px',
                                     overflow: 'hidden'
                                 }
                             },
@@ -178,8 +120,8 @@ xtag.register('game-map', {
                                 m('div.mainOffset', {
                                     style: {
                                         position: 'absolute',
-                                        top: (currentCity.y - yWidth/2) * -1 + 'px',
-                                        left: (currentCity.x - xWidth/2) * -1 + 'px',
+                                        top: (currentCity.y - mapHeight/2) * -1 + 'px',
+                                        left: (currentCity.x - mapWidth/2) * -1 + 'px',
                                         animation: state.currentViewAnimation
                                     }
                                 },
