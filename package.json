@@ -18,6 +18,7 @@
   "homepage": "https://github.com/bitterulf/alpha",
   "dependencies": {
     "domready": "^1.0.8",
-    "html2json": "^1.0.2"
+    "html2json": "^1.0.2",
+    "js-beautify": "^1.6.14"
   }
 }

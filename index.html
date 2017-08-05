@@ -10,7 +10,111 @@
         </style>
     </head>
     <body>
-        <div id='container'></div>
+
+<game-map start="Hamburg" width="1024" height="768">
+    <game-background image="map.png" width="2048" height="1536" x="0" y="0"></game-background>
+    <game-city name="Hamburg" x="804" y="781"></game-city>
+    <game-city name="Bremen" x="773" y="798"></game-city>
+    <game-city name="Luebeck" x="826" y="776"></game-city>
+    <game-city name="Somewhere" x="1002" y="566"></game-city>
+    <game-city name="London" x="557" y="813"></game-city>
+    <game-city name="Malle" x="707" y="1236"></game-city>
+    <game-road from="Luebeck" to="Hamburg">
+        <game-point x="826" y="776"></game-point>
+        <game-point x="845" y="770"></game-point>
+        <game-point x="842" y="747"></game-point>
+        <game-point x="844" y="737"></game-point>
+        <game-point x="837" y="712"></game-point>
+        <game-point x="844" y="691"></game-point>
+        <game-point x="857" y="669"></game-point>
+        <game-point x="857" y="648"></game-point>
+        <game-point x="851" y="611"></game-point>
+        <game-point x="831" y="610"></game-point>
+        <game-point x="809" y="618"></game-point>
+        <game-point x="788" y="638"></game-point>
+        <game-point x="776" y="664"></game-point>
+        <game-point x="768" y="710"></game-point>
+        <game-point x="771" y="734"></game-point>
+        <game-point x="775" y="763"></game-point>
+        <game-point x="785" y="771"></game-point>
+        <game-point x="792" y="773"></game-point>
+        <game-point x="797" y="782"></game-point>
+        <game-point x="804" y="781"></game-point>
+    </game-road>
+    <game-road from="Bremen" to="Hamburg">
+        <game-point x="773" y="798"></game-point>
+        <game-point x="775" y="782"></game-point>
+        <game-point x="777" y="772"></game-point>
+        <game-point x="783" y="769"></game-point>
+        <game-point x="794" y="774"></game-point>
+        <game-point x="797" y="783"></game-point>
+        <game-point x="804" y="781"></game-point>
+    </game-road>
+    <game-road from="Bremen" to="Luebeck">
+        <game-point x="773" y="798"></game-point>
+        <game-point x="768" y="745"></game-point>
+        <game-point x="767" y="701"></game-point>
+        <game-point x="772" y="663"></game-point>
+        <game-point x="787" y="633"></game-point>
+        <game-point x="809" y="616"></game-point>
+        <game-point x="833" y="610"></game-point>
+        <game-point x="852" y="612"></game-point>
+        <game-point x="857" y="648"></game-point>
+        <game-point x="856" y="670"></game-point>
+        <game-point x="843" y="695"></game-point>
+        <game-point x="837" y="713"></game-point>
+        <game-point x="844" y="737"></game-point>
+        <game-point x="842" y="749"></game-point>
+        <game-point x="845" y="770"></game-point>
+        <game-point x="826" y="776"></game-point>
+    </game-road>
+    <game-road from="London" to="Bremen">
+        <game-point x="557" y="813"></game-point>
+        <game-point x="573" y="818"></game-point>
+        <game-point x="582" y="817"></game-point>
+        <game-point x="590" y="817"></game-point>
+        <game-point x="598" y="815"></game-point>
+        <game-point x="614" y="808"></game-point>
+        <game-point x="622" y="797"></game-point>
+        <game-point x="632" y="784"></game-point>
+        <game-point x="643" y="776"></game-point>
+        <game-point x="661" y="766"></game-point>
+        <game-point x="675" y="766"></game-point>
+        <game-point x="687" y="768"></game-point>
+        <game-point x="709" y="765"></game-point>
+        <game-point x="718" y="769"></game-point>
+        <game-point x="743" y="768"></game-point>
+        <game-point x="759" y="769"></game-point>
+        <game-point x="773" y="774"></game-point>
+        <game-point x="773" y="798"></game-point>
+    </game-road>
+    <game-road from="Malle" to="London">
+        <game-point x="707" y="1236"></game-point>
+        <game-point x="516" y="1352"></game-point>
+        <game-point x="405" y="1376"></game-point>
+        <game-point x="305" y="1389"></game-point>
+        <game-point x="218" y="1361"></game-point>
+        <game-point x="145" y="1347"></game-point>
+        <game-point x="96" y="1305"></game-point>
+        <game-point x="72" y="1249"></game-point>
+        <game-point x="78" y="1159"></game-point>
+        <game-point x="114" y="1078"></game-point>
+        <game-point x="244" y="897"></game-point>
+        <game-point x="306" y="865"></game-point>
+        <game-point x="367" y="859"></game-point>
+        <game-point x="432" y="857"></game-point>
+        <game-point x="510" y="866"></game-point>
+        <game-point x="555" y="868"></game-point>
+        <game-point x="577" y="863"></game-point>
+        <game-point x="586" y="848"></game-point>
+        <game-point x="613" y="841"></game-point>
+        <game-point x="618" y="829"></game-point>
+        <game-point x="616" y="819"></game-point>
+        <game-point x="604" y="816"></game-point>
+        <game-point x="576" y="818"></game-point>
+        <game-point x="557" y="813"></game-point>
+    </game-road>
+</game-map>
 
         <div id="target"></div>
         <s-svg target="target">
