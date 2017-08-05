@@ -118,6 +118,7 @@ xtag.register('game-map', {
                                 m('style', roadViewPaths.join(' ')),
                                 m('style', '@keyframes fade { 0% { opacity: 1 } 100% { opacity: 0 } } @keyframes fadeIn { 0% { opacity: 0 } 100% { opacity: 1 } }'),
                                 m('style', '@keyframes scaleOut { 0% { transform: scale(1.0) } 100% { transform: scale(0.5) } } @keyframes scaleIn { 0% { transform: scale(0.5) } 100% { transform: scale(1.0) } }'),
+                                m('style', '@keyframes wave { 0%, 100% { top: 0px; transform: rotate(0deg); } 50% { top: 4px; transform: rotate(3deg); } }'),
                                 m('div.mainOffset', {
                                     style: {
                                         position: 'absolute',
@@ -173,6 +174,12 @@ xtag.register('game-map', {
                                             animation: state.currentAnimation
                                         }
                                     },
+                                      m('div', {
+                                            style: {
+                                                position: 'relative',
+                                                animation: 'wave 1000ms infinite'
+                                            }
+                                        },
                                         m('div.player', {
                                             style: {
                                                 position: 'relative',
@@ -185,6 +192,7 @@ xtag.register('game-map', {
                                                 animation: state.idle ? 'fade 1000ms forwards' : 'fadeIn 1000ms forwards'
                                             }
                                         })
+                                      )
                                     )
                                 ]),
                                 m('div.roads', {
