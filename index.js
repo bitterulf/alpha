@@ -32,7 +32,8 @@ xtag.register('game-map', {
 
             const Component = {
                 view: function() {
-                    const cityRadius = 43;
+                    const cityRadius = 20;
+                    const playerRadius = 43;
 
                     const mapWidth = state.width;
                     const mapHeight = state.height;
@@ -148,16 +149,17 @@ xtag.register('game-map', {
                                                     top: (city.y) + 'px'
                                                 }
                                             }, m('div', {
+                                                title: city.name,
                                                 style: {
                                                     position: 'relative',
                                                     left: cityRadius * -1 + 'px',
                                                     top: cityRadius * -1 + 'px',
                                                     width: cityRadius * 2 + 'px',
                                                     height: cityRadius * 2 + 'px',
-                                                    border: '1px solid grey',
+                                                    'background-image': 'url("marker.png")',
                                                     'text-align': 'center'
                                                 }
-                                            }, city.name)
+                                            })
                                         );
                                     })),
                                     m('div.playerAnimation', {
@@ -171,10 +173,10 @@ xtag.register('game-map', {
                                         m('div.player', {
                                             style: {
                                                 position: 'relative',
-                                                left: cityRadius * -1 + 'px',
-                                                top: cityRadius * -1.75 + 'px',
-                                                width: cityRadius * 2 + 'px',
-                                                height: cityRadius * 2 + 'px',
+                                                left: playerRadius * -1 + 'px',
+                                                top: playerRadius * -1.75 + 'px',
+                                                width: playerRadius * 2 + 'px',
+                                                height: playerRadius * 2 + 'px',
                                                 'text-align': 'center',
                                                 'background-image': 'url("ship.png")'
                                             }
