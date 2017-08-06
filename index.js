@@ -2,6 +2,7 @@ const domready = require('domready');
 const cheerio = require('cheerio');
 const html2json = require('html2json').html2json;
 const json2html = require('html2json').json2html;
+const inside = require('point-in-polygon');
 const extractor = require('./modules/extractor.js');
 
 xtag.register('game-map', {
@@ -11,9 +12,34 @@ xtag.register('game-map', {
             const startCity = travelNode.attr.start;
 
             const backgrounds = extractor.extractBackgrounds(travelNode);
-            const cities = extractor.extractCities(travelNode);
-            const roads = extractor.extractRoads(travelNode);
+            let cities = extractor.extractCities(travelNode);
+            let roads = extractor.extractRoads(travelNode);
             const areas = extractor.extractAreas(travelNode);
+
+            roads = roads.map(function(road) {
+                road.path = road.path.map(function(point) {
+                    areas.forEach(function(area) {
+                        if (inside([point.x, point.y], area.path.map(function(p){ return [p.x, p.y]}))) {
+                            point.zone = area.name;
+                        }
+                    });
+
+                    return point;
+                });
+
+                return road
+            });
+
+            cities = cities.map(function(city) {
+
+                areas.forEach(function(area) {
+                    if (inside([city.x, city.y], area.path.map(function(p){ return [p.x, p.y]}))) {
+                        city.zone = area.name;
+                    }
+                });
+
+                return city
+            });
 
             this.state = {
                 width: travelNode.attr.width,
