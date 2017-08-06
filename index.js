@@ -13,6 +13,7 @@ xtag.register('game-map', {
             const backgrounds = extractor.extractBackgrounds(travelNode);
             const cities = extractor.extractCities(travelNode);
             const roads = extractor.extractRoads(travelNode);
+            const areas = extractor.extractAreas(travelNode);
 
             this.state = {
                 width: travelNode.attr.width,

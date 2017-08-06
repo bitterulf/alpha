@@ -48,6 +48,28 @@ module.exports = {
         return roads;
     },
 
+    extractAreas: function(travelNode) {
+        const areas = [];
+
+        forEachElement(travelNode, 'game-area', function(roadNode) {
+            const path = roadNode.child.filter(function(child) {
+                return child.node == 'element' && child.tag == 'game-point';
+            }).map(function(node) {
+                return {
+                    x: parseInt(node.attr.x),
+                    y: parseInt(node.attr.y)
+                };
+            });
+
+            areas.push({
+                name: roadNode.attr.name,
+                path: path
+            });
+        });
+
+        return areas;
+    },
+
     extractBackgrounds: function(travelNode) {
         const backgrounds = [];
 

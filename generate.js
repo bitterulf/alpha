@@ -6,6 +6,7 @@ const map = require('./map.json');
 
 const cities = [];
 const roads = [];
+const areas = [];
 
 map
     .layers
@@ -72,6 +73,27 @@ map
         });
     });
 
+map
+    .layers
+    .filter(function(layer) { return layer.type == 'objectgroup'})
+    .forEach(function(layer) {
+        layer.objects.forEach(function(obj) {
+            if(obj.polygon) {
+                const path = obj.polygon.map(function(point) {
+                    return {
+                        x: obj.x + point.x,
+                        y: obj.y + point.y
+                    };
+                });
+
+                areas.push({
+                    name: obj.name,
+                    path: path
+                });
+            }
+        });
+    });
+
 const backgrounds = [];
 map
     .layers
@@ -128,6 +150,28 @@ childElements = childElements.concat(
                 "to": road.to
             },
             "child": road.path.map(function(point) {
+                return {
+                    "node":"element",
+                    "tag":"game-point",
+                    "attr":{
+                        "x": point.x,
+                        "y": point.y
+                    }
+                };
+            })
+        };
+    })
+);
+
+childElements = childElements.concat(
+    areas.map(function(area) {
+        return {
+            "node":"element",
+            "tag":"game-area",
+            "attr":{
+                "name": area.name
+            },
+            "child": area.path.map(function(point) {
                 return {
                     "node":"element",
                     "tag":"game-point",
