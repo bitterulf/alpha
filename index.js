@@ -41,6 +41,14 @@ xtag.register('game-map', {
                 return city
             });
 
+            let zone = '';
+
+            cities.forEach(function(city) {
+                if (city.name == startCity) {
+                    zone = city.zone;
+                }
+            });
+
             this.state = {
                 width: travelNode.attr.width,
                 height: travelNode.attr.height,
@@ -50,7 +58,8 @@ xtag.register('game-map', {
                 currentViewAnimation: '',
                 backgrounds: backgrounds,
                 cities: cities,
-                roads: roads
+                roads: roads,
+                zone: ''
             };
 
         },
@@ -222,6 +231,15 @@ xtag.register('game-map', {
                                       )
                                     )
                                 ]),
+                                m('div.zone', {style: {
+                                    position: 'absolute',
+                                    top: (mapHeight/4*2.5)+'px',
+                                    left: '0px',
+                                    width: mapWidth+'px',
+                                    'text-align': 'center'
+                                }}, [
+                                    m('div', state.zone)
+                                ]),
                                 m('div.roads', {
                                     style: {
                                         position: 'absolute',
@@ -238,6 +256,16 @@ xtag.register('game-map', {
                                     return m('button', {
                                         onclick: function() {
                                             const distance = road.path[road.path.length - 1].rawDistance;
+
+                                            road.path.forEach(function(point){
+                                                const time = Math.round(point.rawDistance * 10);
+
+                                                window.setTimeout(function() {
+                                                    state.zone = point.zone;
+                                                    m.redraw();
+                                                }, time);
+                                            });
+
                                             const time = parseInt(distance * 10);
                                             console.log('MIME', time);
                                             state.idle = false;
